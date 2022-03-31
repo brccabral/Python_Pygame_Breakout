@@ -69,11 +69,17 @@ class Player(GameObject):
 
 
 class Ball(GameObject):
-    def __init__(self, groups: List[pygame.sprite.Group], player: pygame.sprite.Sprite):
+    def __init__(
+        self,
+        groups: List[pygame.sprite.Group],
+        player: pygame.sprite.Sprite,
+        blocks: pygame.sprite.Group,
+    ):
         super().__init__(groups)
 
         # collisions
         self.player = player
+        self.blocks = blocks
 
         # setup
         self.image = pygame.image.load("graphics/other/ball.png").convert_alpha()
@@ -90,7 +96,7 @@ class Ball(GameObject):
 
     def input(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_SPACE] and self.rect.midbottom == self.player.rect.midtop:
             self.active = True
 
     def window_collision(self, direction: str):
@@ -115,7 +121,9 @@ class Ball(GameObject):
     def collision(self, direction: str):
 
         # find overlapping objects
-        overlap_sprites: List[GameObject] = []
+        overlap_sprites: List[GameObject] = pygame.sprite.spritecollide(
+            self, self.blocks, False
+        )
         if self.rect.colliderect(self.player.rect):
             overlap_sprites.append(self.player)
 
@@ -129,6 +137,7 @@ class Ball(GameObject):
                         self.rect.right = sprite.rect.left
                         self.pos.x = self.rect.x
                         self.direction.x *= -1
+                        break
                     elif (
                         self.rect.left <= sprite.rect.right
                         and self.old_rect.left >= sprite.old_rect.right
@@ -136,6 +145,7 @@ class Ball(GameObject):
                         self.rect.left = sprite.rect.right
                         self.pos.x = self.rect.x
                         self.direction.x *= -1
+                        break
             elif direction == "vertical":
                 for sprite in overlap_sprites:
                     if (
@@ -145,13 +155,15 @@ class Ball(GameObject):
                         self.rect.bottom = sprite.rect.top
                         self.pos.y = self.rect.y
                         self.direction.y *= -1
+                        break
                     elif (
                         self.rect.top <= sprite.rect.bottom
                         and self.old_rect.top >= sprite.old_rect.bottom
                     ):
                         self.rect.top = sprite.rect.bottom
-                        self.pos.y = self.rect.x
+                        self.pos.y = self.rect.y
                         self.direction.y *= -1
+                        break
 
     def update(self, dt: float):
         self.input()
@@ -190,3 +202,4 @@ class Block(GameObject):
         self.image = pygame.Surface((BLOCK_WIDTH, BLOCK_HEIGHT))
         self.image.fill(COLOR_LEGEND[block_type])
         self.rect = self.image.get_rect(topleft=pos)
+        self.old_rect = self.rect.copy()

@@ -27,12 +27,13 @@ class Game:
 
         # sprites group
         self.all_sprites = pygame.sprite.Group()
+        self.block_sprites = pygame.sprite.Group()
 
         # sprites
         self.player = Player([self.all_sprites])
-        self.ball = Ball([self.all_sprites], self.player)
-
         self.stage_setup()
+        self.ball = Ball([self.all_sprites], self.player, self.block_sprites)
+
 
     def create_bg(self):
         bg_original = pygame.image.load("graphics/other/bg.png").convert()
@@ -48,7 +49,7 @@ class Game:
             for col_index, col in enumerate(row):
                 x = col_index * (BLOCK_WIDTH + GAP_SIZE) + GAP_SIZE // 2
                 if col != " ":
-                    Block([self.all_sprites], col, (x, y))
+                    Block([self.all_sprites, self.block_sprites], col, (x, y))
 
     def run(self):
         last_time = time.time()
