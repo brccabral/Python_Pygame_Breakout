@@ -75,6 +75,10 @@ class Game:
                     pygame.quit()
                     sys.exit()
 
+            if self.player.hearts <= 0:
+                pygame.quit()
+                sys.exit()
+
             # update the game
             self.all_sprites.update(dt)
 
