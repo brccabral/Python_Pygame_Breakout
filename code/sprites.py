@@ -219,9 +219,10 @@ class Block(GameObject):
 
     def get_damage(self, amount: int):
         self.health -= amount
-        print(self.health)
         if self.health > 0:
             # update the image
-            pass
+            self.image = SurfaceMaker.get_surf(
+                COLOR_LEGEND[str(self.health)], (BLOCK_WIDTH, BLOCK_HEIGHT)
+            )
         else:
             self.kill()
