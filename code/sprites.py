@@ -62,9 +62,19 @@ class Ball(pygame.sprite.Sprite):
         # active
         self.active = False
 
+    def input(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            self.active = True
+
     def update(self, dt: float):
+        self.input()
         if self.active:
-            pass
+            if self.direction.magnitude() != 0:
+                self.direction = self.direction.normalize()
+
+            self.pos += self.direction * self.speed * dt
+            self.rect.topleft = (round(self.pos.x), round(self.pos.y))
         else:
             self.rect.midbottom = self.player.rect.midtop
             self.pos = pygame.math.Vector2(self.rect.topleft)
