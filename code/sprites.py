@@ -4,7 +4,21 @@ import pygame
 from settings import WINDOW_WIDTH, WINDOW_HEIGHT
 
 
-class Player(pygame.sprite.Sprite):
+class GameObject(pygame.sprite.Sprite):
+    def __init__(self, groups: List[pygame.sprite.Group]):
+        super().__init__(groups)
+        self.image = pygame.Surface((0, 0))
+        self.rect = self.image.get_rect()
+        self.old_rect = self.rect.copy()
+        self.direction = pygame.math.Vector2()
+        self.pos = pygame.math.Vector2()
+        self.speed = 0
+
+    def input(self):
+        pass
+
+
+class Player(GameObject):
     def __init__(self, groups: List[pygame.sprite.Group]):
         super().__init__(groups)
 
@@ -16,6 +30,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(
             midbottom=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 20)
         )
+        self.old_rect = self.rect.copy()
         self.direction = pygame.math.Vector2()
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.speed = 300
@@ -38,12 +53,16 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, dt: float):
         self.input()
+
+        # copy rect before move it
+        self.old_rect = self.rect.copy()
+
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = round(self.pos.x)
         self.screen_constraint()
 
 
-class Ball(pygame.sprite.Sprite):
+class Ball(GameObject):
     def __init__(self, groups: List[pygame.sprite.Group], player: pygame.sprite.Sprite):
         super().__init__(groups)
 
@@ -55,6 +74,7 @@ class Ball(pygame.sprite.Sprite):
 
         # position
         self.rect = self.image.get_rect(midbottom=self.player.rect.midbottom)
+        self.old_rect = self.rect.copy()
         self.direction = pygame.math.Vector2((random.choice((1, -1)), -1))
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.speed = 400
@@ -82,12 +102,50 @@ class Ball(pygame.sprite.Sprite):
                 self.rect.top = 0
                 self.pos.y = self.rect.y
                 self.direction.y *= -1
-            elif self.rect.bottom >= WINDOW_HEIGHT:
+            elif self.rect.top >= WINDOW_HEIGHT:
                 self.active = False
                 self.direction.y = -1
 
-    def collision(self):
-        pass
+    def collision(self, direction: str):
+
+        # find overlapping objects
+        overlap_sprites: List[GameObject] = []
+        if self.rect.colliderect(self.player.rect):
+            overlap_sprites.append(self.player)
+
+        if overlap_sprites:
+            if direction == "horizontal":
+                for sprite in overlap_sprites:
+                    if (
+                        self.rect.right >= sprite.rect.left
+                        and self.old_rect.right <= sprite.old_rect.left
+                    ):
+                        self.rect.right = sprite.rect.left
+                        self.pos.x = self.rect.x
+                        self.direction.x *= -1
+                    elif (
+                        self.rect.left <= sprite.rect.right
+                        and self.old_rect.left >= sprite.old_rect.right
+                    ):
+                        self.rect.left = sprite.rect.right
+                        self.pos.x = self.rect.x
+                        self.direction.x *= -1
+            elif direction == "vertical":
+                for sprite in overlap_sprites:
+                    if (
+                        self.rect.bottom >= sprite.rect.top
+                        and self.old_rect.bottom <= sprite.old_rect.top
+                    ):
+                        self.rect.bottom = sprite.rect.top
+                        self.pos.y = self.rect.y
+                        self.direction.y *= -1
+                    elif (
+                        self.rect.top <= sprite.rect.bottom
+                        and self.old_rect.top >= sprite.old_rect.bottom
+                    ):
+                        self.rect.top = sprite.rect.bottom
+                        self.pos.y = self.rect.x
+                        self.direction.y *= -1
 
     def update(self, dt: float):
         self.input()
@@ -96,12 +154,19 @@ class Ball(pygame.sprite.Sprite):
             if self.direction.magnitude() != 0:
                 self.direction = self.direction.normalize()
 
+            # copy rect before move it
+            self.old_rect = self.rect.copy()
+
+            # horizontal collistions
             self.pos.x += self.direction.x * self.speed * dt
             self.rect.x = self.pos.x
+            self.collision("horizontal")
             self.window_collision("horizontal")
 
+            # vertical collistion
             self.pos.y += self.direction.y * self.speed * dt
             self.rect.y = self.pos.y
+            self.collision("vertical")
             self.window_collision("vertical")
         else:
             # whenever the ball becomes inactive, it comes back to the player
