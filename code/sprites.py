@@ -1,7 +1,13 @@
 import random
-from typing import List
+from typing import List, Tuple
 import pygame
-from settings import WINDOW_WIDTH, WINDOW_HEIGHT
+from settings import (
+    BLOCK_HEIGHT,
+    BLOCK_WIDTH,
+    COLOR_LEGEND,
+    WINDOW_WIDTH,
+    WINDOW_HEIGHT,
+)
 
 
 class GameObject(pygame.sprite.Sprite):
@@ -172,3 +178,15 @@ class Ball(GameObject):
             # whenever the ball becomes inactive, it comes back to the player
             self.rect.midbottom = self.player.rect.midtop
             self.pos = pygame.math.Vector2(self.rect.topleft)
+
+
+class Block(GameObject):
+    def __init__(
+        self, groups: List[pygame.sprite.Group], block_type: str, pos: Tuple[int, int]
+    ):
+        super().__init__(groups)
+
+        # setup
+        self.image = pygame.Surface((BLOCK_WIDTH, BLOCK_HEIGHT))
+        self.image.fill(COLOR_LEGEND[block_type])
+        self.rect = self.image.get_rect(topleft=pos)
