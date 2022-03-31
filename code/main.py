@@ -1,6 +1,7 @@
 import pygame
 import sys
 import time
+from sprites import Player
 from settings import WINDOW_WIDTH, WINDOW_HEIGHT, FRAMERATE
 
 
@@ -15,6 +16,12 @@ class Game:
 
         # background
         self.bg = self.create_bg()
+
+        # sprites group
+        self.all_sprites = pygame.sprite.Group()
+
+        # sprites
+        self.player = Player(self.all_sprites)
 
     def create_bg(self):
         bg_original = pygame.image.load("graphics/other/bg.png").convert()
@@ -39,6 +46,7 @@ class Game:
                     sys.exit()
 
             self.display_surface.blit(self.bg, (0, 0))
+            self.all_sprites.draw(self.display_surface)
             # game logic
             pygame.display.update()
             self.clock.tick(FRAMERATE)
