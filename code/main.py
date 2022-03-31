@@ -1,7 +1,7 @@
 import pygame
 import sys
 import time
-from sprites import Player
+from sprites import Ball, Player
 from settings import WINDOW_WIDTH, WINDOW_HEIGHT, FRAMERATE
 
 
@@ -22,6 +22,7 @@ class Game:
 
         # sprites
         self.player = Player(self.all_sprites)
+        self.ball = Ball(self.all_sprites, self.player)
 
     def create_bg(self):
         bg_original = pygame.image.load("graphics/other/bg.png").convert()
