@@ -123,6 +123,7 @@ class Ball(GameObject):
             elif self.rect.top >= WINDOW_HEIGHT:
                 self.active = False
                 self.direction.y = -1
+                self.player.hearts -= 1
 
     def collision(self, direction: str):
 
