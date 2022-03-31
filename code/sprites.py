@@ -36,6 +36,7 @@ class Player(GameObject):
         self.image = SurfaceMaker.get_surf(
             "player", (WINDOW_WIDTH // 10, WINDOW_HEIGHT // 20)
         )
+        self.hearts = 3
 
         # position
         self.rect = self.image.get_rect(
@@ -77,7 +78,7 @@ class Ball(GameObject):
     def __init__(
         self,
         groups: List[pygame.sprite.Group],
-        player: pygame.sprite.Sprite,
+        player: Player,
         blocks: pygame.sprite.Group,
     ):
         super().__init__(groups)

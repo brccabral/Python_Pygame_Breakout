@@ -7,6 +7,7 @@ from settings import (
     BLOCK_MAP,
     BLOCK_WIDTH,
     GAP_SIZE,
+    TOP_OFFSET,
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
     FRAMERATE,
@@ -34,6 +35,15 @@ class Game:
         self.stage_setup()
         self.ball = Ball([self.all_sprites], self.player, self.block_sprites)
 
+        # hearts
+        self.heart_surface = pygame.image.load(
+            "graphics/other/heart.png"
+        ).convert_alpha()
+
+    def display_hearts(self):
+        for i in range(self.player.hearts):
+            x = i * (self.heart_surface.get_width() + 2) + 2
+            self.display_surface.blit(self.heart_surface, (x, 4))
 
     def create_bg(self):
         bg_original = pygame.image.load("graphics/other/bg.png").convert()
@@ -45,7 +55,7 @@ class Game:
 
     def stage_setup(self):
         for row_index, row in enumerate(BLOCK_MAP):
-            y = row_index * (BLOCK_HEIGHT + GAP_SIZE) + GAP_SIZE // 2
+            y = row_index * (BLOCK_HEIGHT + GAP_SIZE) + GAP_SIZE // 2 + TOP_OFFSET
             for col_index, col in enumerate(row):
                 x = col_index * (BLOCK_WIDTH + GAP_SIZE) + GAP_SIZE // 2
                 if col != " ":
@@ -68,8 +78,11 @@ class Game:
             # update the game
             self.all_sprites.update(dt)
 
+            # update UI
             self.display_surface.blit(self.bg, (0, 0))
             self.all_sprites.draw(self.display_surface)
+            self.display_hearts()
+
             # game logic
             pygame.display.update()
             self.clock.tick(FRAMERATE)
