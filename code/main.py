@@ -13,6 +13,17 @@ class Game:
         pygame.display.set_caption("Breakout")
         self.clock = pygame.time.Clock()
 
+        # background
+        self.bg = self.create_bg()
+
+    def create_bg(self):
+        bg_original = pygame.image.load("graphics/other/bg.png").convert()
+        scale_factor = WINDOW_HEIGHT / bg_original.get_height()
+        w = bg_original.get_width() * scale_factor
+        h = bg_original.get_height() * scale_factor
+        scaled_bg = pygame.transform.scale(bg_original, (w, h))
+        return scaled_bg
+
     def run(self):
         last_time = time.time()
         while True:
@@ -27,6 +38,7 @@ class Game:
                     pygame.quit()
                     sys.exit()
 
+            self.display_surface.blit(self.bg, (0, 0))
             # game logic
             pygame.display.update()
             self.clock.tick(FRAMERATE)
