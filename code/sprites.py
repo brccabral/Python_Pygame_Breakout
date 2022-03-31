@@ -23,6 +23,9 @@ class GameObject(pygame.sprite.Sprite):
     def input(self):
         pass
 
+    def get_damage(self, amount: int):
+        pass
+
 
 class Player(GameObject):
     def __init__(self, groups: List[pygame.sprite.Group]):
@@ -137,6 +140,7 @@ class Ball(GameObject):
                         self.rect.right = sprite.rect.left
                         self.pos.x = self.rect.x
                         self.direction.x *= -1
+                        sprite.get_damage(1)
                         break
                     elif (
                         self.rect.left <= sprite.rect.right
@@ -145,6 +149,7 @@ class Ball(GameObject):
                         self.rect.left = sprite.rect.right
                         self.pos.x = self.rect.x
                         self.direction.x *= -1
+                        sprite.get_damage(1)
                         break
             elif direction == "vertical":
                 for sprite in overlap_sprites:
@@ -155,6 +160,7 @@ class Ball(GameObject):
                         self.rect.bottom = sprite.rect.top
                         self.pos.y = self.rect.y
                         self.direction.y *= -1
+                        sprite.get_damage(1)
                         break
                     elif (
                         self.rect.top <= sprite.rect.bottom
@@ -163,6 +169,7 @@ class Ball(GameObject):
                         self.rect.top = sprite.rect.bottom
                         self.pos.y = self.rect.y
                         self.direction.y *= -1
+                        sprite.get_damage(1)
                         break
 
     def update(self, dt: float):
@@ -203,3 +210,15 @@ class Block(GameObject):
         self.image.fill(COLOR_LEGEND[block_type])
         self.rect = self.image.get_rect(topleft=pos)
         self.old_rect = self.rect.copy()
+
+        # damage information
+        self.health = int(block_type)
+
+    def get_damage(self, amount: int):
+        self.health -= amount
+        print(self.health)
+        if self.health > 0:
+            # update the image
+            pass
+        else:
+            self.kill()
