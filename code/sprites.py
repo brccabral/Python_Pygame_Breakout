@@ -28,7 +28,15 @@ class Player(pygame.sprite.Sprite):
         else:
             self.direction.x = 0
 
+    def screen_constraint(self):
+        if self.rect.left <= 0:
+            self.rect.left = 0
+        elif self.rect.right >= WINDOW_WIDTH:
+            self.rect.right = WINDOW_WIDTH
+        self.pos.x = self.rect.x
+
     def update(self, dt: float):
         self.input()
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = round(self.pos.x)
+        self.screen_constraint()
