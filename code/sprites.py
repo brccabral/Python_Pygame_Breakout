@@ -1,6 +1,7 @@
 import random
 from typing import List, Tuple
 import pygame
+from surface_maker import SurfaceMaker
 from settings import (
     BLOCK_HEIGHT,
     BLOCK_WIDTH,
@@ -32,8 +33,9 @@ class Player(GameObject):
         super().__init__(groups)
 
         # setup
-        self.image = pygame.Surface((WINDOW_WIDTH // 10, WINDOW_HEIGHT // 20))
-        self.image.fill("red")
+        self.image = SurfaceMaker.get_surf(
+            "player", (WINDOW_WIDTH // 10, WINDOW_HEIGHT // 20)
+        )
 
         # position
         self.rect = self.image.get_rect(
@@ -206,8 +208,9 @@ class Block(GameObject):
         super().__init__(groups)
 
         # setup
-        self.image = pygame.Surface((BLOCK_WIDTH, BLOCK_HEIGHT))
-        self.image.fill(COLOR_LEGEND[block_type])
+        self.image = SurfaceMaker.get_surf(
+            COLOR_LEGEND[block_type], (BLOCK_WIDTH, BLOCK_HEIGHT)
+        )
         self.rect = self.image.get_rect(topleft=pos)
         self.old_rect = self.rect.copy()
 

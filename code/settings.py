@@ -20,7 +20,7 @@ COLOR_LEGEND = {
     "3": "red",
     "4": "orange",
     "5": "purple",
-    "6": "brown",
+    "6": "bronce",
     "7": "grey",
 }
 
