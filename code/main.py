@@ -53,6 +53,9 @@ class Game:
         self.can_shoot = True
         self.shoot_time = 0
 
+        # crt
+        self.crt = CRT()
+
     def laser_timer(self):
         if pygame.time.get_ticks() - self.shoot_time >= 500:
             self.can_shoot = True
@@ -148,10 +151,26 @@ class Game:
             # update UI
             self.all_sprites.draw(self.display_surface)
             self.display_hearts()
+            self.crt.draw()
 
             # update window
             pygame.display.update()
             self.clock.tick(FRAMERATE)
+
+
+class CRT:
+    """Simulates old TV"""
+
+    def __init__(self):
+        vignette = pygame.image.load("graphics/other/tv.png").convert_alpha()
+        self.scaled_vignette = pygame.transform.scale(
+            vignette, (WINDOW_WIDTH, WINDOW_HEIGHT)
+        )
+        self.display_surface = pygame.display.get_surface()
+
+    def draw(self):
+        self.scaled_vignette.set_alpha(random.randint(50, 90))
+        self.display_surface.blit(self.scaled_vignette, (0, 0))
 
 
 def main():
