@@ -50,12 +50,18 @@ class Game:
         self.projectile_surf = pygame.image.load(
             "graphics/other/projectile.png"
         ).convert_alpha()
+        self.can_shoot = True
+        self.shoot_time = 0
+
+    def laser_timer(self):
+        if pygame.time.get_ticks() - self.shoot_time >= 500:
+            self.can_shoot = True
 
     def create_projectile(self):
         for projectile in self.player.laser_rects:
             Projectile(
                 [self.all_sprites, self.projectile_sprites],
-                projectile.midtop - pygame.math.Vector2(0, 30),
+                projectile.midtop - pygame.math.Vector2(0, 0),
                 self.projectile_surf,
             )
 
@@ -111,7 +117,10 @@ class Game:
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        self.create_projectile()
+                        if self.can_shoot:
+                            self.create_projectile()
+                            self.can_shoot = False
+                            self.shoot_time = pygame.time.get_ticks()
 
             if self.player.hearts <= 0:
                 pygame.quit()
@@ -123,6 +132,7 @@ class Game:
             # update the game
             self.all_sprites.update(dt)
             self.upgrade_collisions()
+            self.laser_timer()
 
             # update UI
             self.all_sprites.draw(self.display_surface)
