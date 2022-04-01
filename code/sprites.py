@@ -56,6 +56,19 @@ class Player(GameObject):
         else:
             self.direction.x = 0
 
+    def upgrade(self, upgrade_type: str):
+        if upgrade_type == "speed":
+            self.speed += 50
+        elif upgrade_type == "laser":
+            pass
+        elif upgrade_type == "heart":
+            self.hearts += 1
+        elif upgrade_type == "size":
+            new_width = self.rect.width * 1.1
+            self.image = SurfaceMaker.get_surf("player", (new_width, self.rect.height))
+            self.rect = self.image.get_rect(center=self.rect.center)
+            self.pos.x = self.rect.x
+
     def screen_constraint(self):
         if self.rect.left <= 0:
             self.rect.left = 0
@@ -234,7 +247,8 @@ class Block(GameObject):
                 COLOR_LEGEND[str(self.health)], (BLOCK_WIDTH, BLOCK_HEIGHT)
             )
         else:
-            self.create_upgrade(self.rect.center)
+            if random.randint(0, 10) < 3:
+                self.create_upgrade(self.rect.center)
             self.kill()
 
 

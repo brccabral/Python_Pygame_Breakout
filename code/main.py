@@ -1,5 +1,5 @@
 import random
-from typing import Tuple
+from typing import List, Tuple
 import pygame
 import sys
 import time
@@ -48,6 +48,13 @@ class Game:
         upgrade_type = random.choice(UPGRADES)
         Upgrade([self.all_sprites, self.upgrade_sprites], upgrade_type, pos)
 
+    def upgrade_collisions(self):
+        overlap_sprites: List[Upgrade] = pygame.sprite.spritecollide(
+            self.player, self.upgrade_sprites, True
+        )
+        for sprite in overlap_sprites:
+            self.player.upgrade(sprite.upgrade_type)
+
     def display_hearts(self):
         for i in range(self.player.hearts):
             x = i * (self.heart_surface.get_width() + 2) + 2
@@ -67,7 +74,12 @@ class Game:
             for col_index, col in enumerate(row):
                 x = col_index * (BLOCK_WIDTH + GAP_SIZE) + GAP_SIZE // 2
                 if col != " ":
-                    Block([self.all_sprites, self.block_sprites], col, (x, y), self.create_upgrade)
+                    Block(
+                        [self.all_sprites, self.block_sprites],
+                        col,
+                        (x, y),
+                        self.create_upgrade,
+                    )
 
     def run(self):
         last_time = time.time()
@@ -89,13 +101,14 @@ class Game:
 
             # update the game
             self.all_sprites.update(dt)
+            self.upgrade_collisions()
 
             # update UI
             self.display_surface.blit(self.bg, (0, 0))
             self.all_sprites.draw(self.display_surface)
             self.display_hearts()
 
-            # game logic
+            # update window
             pygame.display.update()
             self.clock.tick(FRAMERATE)
 
