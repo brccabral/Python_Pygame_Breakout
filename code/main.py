@@ -4,7 +4,7 @@ from typing import List, Tuple
 import pygame
 import sys
 import time
-from sprites import Ball, Block, Player, Projectile, Upgrade
+from sprites import Ball, Block, GameObject, Player, Projectile, Upgrade
 from settings import (
     BLOCK_HEIGHT,
     BLOCK_MAP,
@@ -64,6 +64,16 @@ class Game:
                 projectile.midtop - pygame.math.Vector2(0, 0),
                 self.projectile_surf,
             )
+
+    def projectile_collisions(self):
+        for projectile in self.projectile_sprites:
+            overlap_sprites: List[GameObject] = pygame.sprite.spritecollide(
+                projectile, self.block_sprites, False
+            )
+            if overlap_sprites:
+                for sprite in overlap_sprites:
+                    sprite.get_damage(1)
+                projectile.kill()
 
     def create_upgrade(self, pos: Tuple[int, int]):
         upgrade_type = random.choice(UPGRADES)
@@ -133,6 +143,7 @@ class Game:
             self.all_sprites.update(dt)
             self.upgrade_collisions()
             self.laser_timer()
+            self.projectile_collisions()
 
             # update UI
             self.all_sprites.draw(self.display_surface)
