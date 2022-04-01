@@ -167,6 +167,16 @@ class CRT:
             vignette, (WINDOW_WIDTH, WINDOW_HEIGHT)
         )
         self.display_surface = pygame.display.get_surface()
+        self.create_crt_lines()
+
+    def create_crt_lines(self):
+        line_height = 4
+        line_amount = WINDOW_HEIGHT // line_height
+        for line in range(line_amount):
+            y = line * line_height
+            pygame.draw.line(
+                self.scaled_vignette, (20, 20, 20), (0, y), (WINDOW_WIDTH, y), 1
+            )
 
     def draw(self):
         self.scaled_vignette.set_alpha(random.randint(50, 90))
