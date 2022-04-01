@@ -131,9 +131,9 @@ class Ball(GameObject):
         self.active = False
 
         # sounds
-        self.impact_sound = pygame.mixer.Sound('sounds/impact.wav')
+        self.impact_sound = pygame.mixer.Sound("sounds/impact.wav")
         self.impact_sound.set_volume(0.1)
-        self.fail_sound = pygame.mixer.Sound('sounds/fail.wav')
+        self.fail_sound = pygame.mixer.Sound("sounds/fail.wav")
         self.fail_sound.set_volume(0.1)
 
     def input(self):

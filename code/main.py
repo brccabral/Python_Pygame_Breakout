@@ -1,4 +1,3 @@
-from pydoc import plain
 import random
 from typing import List, Tuple
 import pygame
