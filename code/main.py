@@ -99,12 +99,13 @@ class Game:
                 pygame.quit()
                 sys.exit()
 
+            self.display_surface.blit(self.bg, (0, 0))
+
             # update the game
             self.all_sprites.update(dt)
             self.upgrade_collisions()
 
             # update UI
-            self.display_surface.blit(self.bg, (0, 0))
             self.all_sprites.draw(self.display_surface)
             self.display_hearts()
 

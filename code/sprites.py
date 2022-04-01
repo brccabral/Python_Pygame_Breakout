@@ -33,10 +33,15 @@ class Player(GameObject):
         super().__init__(groups)
 
         # setup
+        self.display_surface = pygame.display.get_surface()
         self.image = SurfaceMaker.get_surf(
             "player", (WINDOW_WIDTH // 10, WINDOW_HEIGHT // 20)
         )
         self.hearts = 3
+        self.laser_amount = 0
+        self.laser_surface = pygame.image.load(
+            "graphics/other/laser.png"
+        ).convert_alpha()
 
         # position
         self.rect = self.image.get_rect(
@@ -60,7 +65,7 @@ class Player(GameObject):
         if upgrade_type == "speed":
             self.speed += 50
         elif upgrade_type == "laser":
-            pass
+            self.laser_amount += 1
         elif upgrade_type == "heart":
             self.hearts += 1
         elif upgrade_type == "size":
@@ -68,6 +73,14 @@ class Player(GameObject):
             self.image = SurfaceMaker.get_surf("player", (new_width, self.rect.height))
             self.rect = self.image.get_rect(center=self.rect.center)
             self.pos.x = self.rect.x
+
+    def display_lasers(self):
+        if self.laser_amount > 0:
+            divider_length = self.rect.width / (self.laser_amount + 1)
+            for i in range(self.laser_amount):
+                x = self.rect.left + divider_length * (i + 1)
+                laser_rect = self.laser_surface.get_rect(midbottom=(x, self.rect.top))
+                self.display_surface.blit(self.laser_surface, laser_rect)
 
     def screen_constraint(self):
         if self.rect.left <= 0:
@@ -85,6 +98,7 @@ class Player(GameObject):
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = round(self.pos.x)
         self.screen_constraint()
+        self.display_lasers()
 
 
 class Ball(GameObject):
