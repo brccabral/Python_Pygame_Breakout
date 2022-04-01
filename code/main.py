@@ -1,13 +1,16 @@
+import random
+from typing import Tuple
 import pygame
 import sys
 import time
-from sprites import Ball, Block, Player
+from sprites import Ball, Block, Player, Upgrade
 from settings import (
     BLOCK_HEIGHT,
     BLOCK_MAP,
     BLOCK_WIDTH,
     GAP_SIZE,
     TOP_OFFSET,
+    UPGRADES,
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
     FRAMERATE,
@@ -29,6 +32,7 @@ class Game:
         # sprites group
         self.all_sprites = pygame.sprite.Group()
         self.block_sprites = pygame.sprite.Group()
+        self.upgrade_sprites = pygame.sprite.Group()
 
         # sprites
         self.player = Player([self.all_sprites])
@@ -39,6 +43,10 @@ class Game:
         self.heart_surface = pygame.image.load(
             "graphics/other/heart.png"
         ).convert_alpha()
+
+    def create_upgrade(self, pos: Tuple[int, int]):
+        upgrade_type = random.choice(UPGRADES)
+        Upgrade([self.all_sprites, self.upgrade_sprites], upgrade_type, pos)
 
     def display_hearts(self):
         for i in range(self.player.hearts):
@@ -59,7 +67,7 @@ class Game:
             for col_index, col in enumerate(row):
                 x = col_index * (BLOCK_WIDTH + GAP_SIZE) + GAP_SIZE // 2
                 if col != " ":
-                    Block([self.all_sprites, self.block_sprites], col, (x, y))
+                    Block([self.all_sprites, self.block_sprites], col, (x, y), self.create_upgrade)
 
     def run(self):
         last_time = time.time()

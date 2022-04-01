@@ -1,5 +1,5 @@
 import random
-from typing import List, Tuple
+from typing import Callable, List, Tuple
 import pygame
 from surface_maker import SurfaceMaker
 from settings import (
@@ -205,7 +205,11 @@ class Ball(GameObject):
 
 class Block(GameObject):
     def __init__(
-        self, groups: List[pygame.sprite.Group], block_type: str, pos: Tuple[int, int]
+        self,
+        groups: List[pygame.sprite.Group],
+        block_type: str,
+        pos: Tuple[int, int],
+        create_upgrade: Callable[[Tuple[int, int]], None],
     ):
         super().__init__(groups)
 
@@ -219,6 +223,9 @@ class Block(GameObject):
         # damage information
         self.health = int(block_type)
 
+        # upgrade
+        self.create_upgrade = create_upgrade
+
     def get_damage(self, amount: int):
         self.health -= amount
         if self.health > 0:
@@ -227,6 +234,7 @@ class Block(GameObject):
                 COLOR_LEGEND[str(self.health)], (BLOCK_WIDTH, BLOCK_HEIGHT)
             )
         else:
+            self.create_upgrade(self.rect.center)
             self.kill()
 
 
