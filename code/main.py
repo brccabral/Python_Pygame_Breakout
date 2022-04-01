@@ -56,11 +56,26 @@ class Game:
         # crt
         self.crt = CRT()
 
+        # sounds
+        self.powerup_sound = pygame.mixer.Sound("sounds/powerup.wav")
+        self.powerup_sound.set_volume(0.1)
+
+        self.laser_sound = pygame.mixer.Sound("sounds/laser.wav")
+        self.laser_sound.set_volume(0.1)
+
+        self.laserhit_sound = pygame.mixer.Sound("sounds/laser_hit.wav")
+        self.laserhit_sound.set_volume(0.1)
+
+        self.music = pygame.mixer.Sound("sounds/music.wav")
+        self.music.set_volume(0.1)
+        self.music.play(loops=-1)
+
     def laser_timer(self):
         if pygame.time.get_ticks() - self.shoot_time >= 500:
             self.can_shoot = True
 
     def create_projectile(self):
+        self.laser_sound.play()
         for projectile in self.player.laser_rects:
             Projectile(
                 [self.all_sprites, self.projectile_sprites],
@@ -77,6 +92,7 @@ class Game:
                 for sprite in overlap_sprites:
                     sprite.get_damage(1)
                 projectile.kill()
+                self.laserhit_sound.play()
 
     def create_upgrade(self, pos: Tuple[int, int]):
         upgrade_type = random.choice(UPGRADES)
@@ -88,6 +104,7 @@ class Game:
         )
         for sprite in overlap_sprites:
             self.player.upgrade(sprite.upgrade_type)
+            self.powerup_sound.play()
 
     def display_hearts(self):
         for i in range(self.player.hearts):
@@ -134,6 +151,9 @@ class Game:
                             self.create_projectile()
                             self.can_shoot = False
                             self.shoot_time = pygame.time.get_ticks()
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                        sys.exit()
 
             if self.player.hearts <= 0:
                 pygame.quit()

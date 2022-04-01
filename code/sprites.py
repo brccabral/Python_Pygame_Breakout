@@ -130,6 +130,12 @@ class Ball(GameObject):
         # active
         self.active = False
 
+        # sounds
+        self.impact_sound = pygame.mixer.Sound('sounds/impact.wav')
+        self.impact_sound.set_volume(0.1)
+        self.fail_sound = pygame.mixer.Sound('sounds/fail.wav')
+        self.fail_sound.set_volume(0.1)
+
     def input(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and self.rect.midbottom == self.player.rect.midtop:
@@ -154,6 +160,7 @@ class Ball(GameObject):
                 self.active = False
                 self.direction.y = -1
                 self.player.hearts -= 1
+                self.fail_sound.play()
 
     def collision(self, direction: str):
 
@@ -175,6 +182,7 @@ class Ball(GameObject):
                         self.pos.x = self.rect.x
                         self.direction.x *= -1
                         sprite.get_damage(1)
+                        self.impact_sound.play()
                         break
                     elif (
                         self.rect.left <= sprite.rect.right
@@ -184,6 +192,7 @@ class Ball(GameObject):
                         self.pos.x = self.rect.x
                         self.direction.x *= -1
                         sprite.get_damage(1)
+                        self.impact_sound.play()
                         break
             elif direction == "vertical":
                 for sprite in overlap_sprites:
@@ -195,6 +204,7 @@ class Ball(GameObject):
                         self.pos.y = self.rect.y
                         self.direction.y *= -1
                         sprite.get_damage(1)
+                        self.impact_sound.play()
                         break
                     elif (
                         self.rect.top <= sprite.rect.bottom
@@ -204,6 +214,7 @@ class Ball(GameObject):
                         self.pos.y = self.rect.y
                         self.direction.y *= -1
                         sprite.get_damage(1)
+                        self.impact_sound.play()
                         break
 
     def update(self, dt: float):
