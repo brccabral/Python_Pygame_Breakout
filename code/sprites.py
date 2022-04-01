@@ -42,6 +42,7 @@ class Player(GameObject):
         self.laser_surface = pygame.image.load(
             "graphics/other/laser.png"
         ).convert_alpha()
+        self.laser_rects: List[pygame.Rect] = []
 
         # position
         self.rect = self.image.get_rect(
@@ -75,11 +76,13 @@ class Player(GameObject):
             self.pos.x = self.rect.x
 
     def display_lasers(self):
+        self.laser_rects = []
         if self.laser_amount > 0:
             divider_length = self.rect.width / (self.laser_amount + 1)
             for i in range(self.laser_amount):
                 x = self.rect.left + divider_length * (i + 1)
                 laser_rect = self.laser_surface.get_rect(midbottom=(x, self.rect.top))
+                self.laser_rects.append(laser_rect)
                 self.display_surface.blit(self.laser_surface, laser_rect)
 
     def screen_constraint(self):
@@ -286,4 +289,25 @@ class Upgrade(pygame.sprite.Sprite):
         self.rect.y = round(self.pos.y)
 
         if self.rect.top > WINDOW_HEIGHT + 100:
+            self.kill()
+
+
+class Projectile(pygame.sprite.Sprite):
+    def __init__(
+        self,
+        groups: List[pygame.sprite.Group],
+        pos: Tuple[int, int],
+        surface: pygame.Surface,
+    ):
+        super().__init__(groups)
+        self.image = surface
+        self.rect = self.image.get_rect(midbottom=pos)
+        self.pos = pygame.math.Vector2(self.rect.topleft)
+        self.speed = 300
+
+    def update(self, dt: float):
+        self.pos.y -= self.speed * dt
+        self.rect.y = round(self.pos.y)
+
+        if self.rect.bottom <= -100:  # passed the top of screen
             self.kill()

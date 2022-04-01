@@ -1,9 +1,10 @@
+from pydoc import plain
 import random
 from typing import List, Tuple
 import pygame
 import sys
 import time
-from sprites import Ball, Block, Player, Upgrade
+from sprites import Ball, Block, Player, Projectile, Upgrade
 from settings import (
     BLOCK_HEIGHT,
     BLOCK_MAP,
@@ -33,6 +34,7 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         self.block_sprites = pygame.sprite.Group()
         self.upgrade_sprites = pygame.sprite.Group()
+        self.projectile_sprites = pygame.sprite.Group()
 
         # sprites
         self.player = Player([self.all_sprites])
@@ -43,6 +45,19 @@ class Game:
         self.heart_surface = pygame.image.load(
             "graphics/other/heart.png"
         ).convert_alpha()
+
+        # projectile
+        self.projectile_surf = pygame.image.load(
+            "graphics/other/projectile.png"
+        ).convert_alpha()
+
+    def create_projectile(self):
+        for projectile in self.player.laser_rects:
+            Projectile(
+                [self.all_sprites, self.projectile_sprites],
+                projectile.midtop - pygame.math.Vector2(0, 30),
+                self.projectile_surf,
+            )
 
     def create_upgrade(self, pos: Tuple[int, int]):
         upgrade_type = random.choice(UPGRADES)
@@ -90,15 +105,19 @@ class Game:
             last_time = time.time()
 
             # event loop
-            for event in pygame.event.get([pygame.QUIT]):
+            for event in pygame.event.get([pygame.QUIT, pygame.KEYDOWN]):
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        self.create_projectile()
 
             if self.player.hearts <= 0:
                 pygame.quit()
                 sys.exit()
 
+            # draw background
             self.display_surface.blit(self.bg, (0, 0))
 
             # update the game
