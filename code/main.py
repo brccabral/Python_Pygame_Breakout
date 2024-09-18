@@ -16,6 +16,9 @@ from settings import (
     FRAMERATE,
 )
 
+# import cProfile
+# import pstats
+
 
 class Game:
     def __init__(self):
@@ -142,8 +145,7 @@ class Game:
             # event loop
             for event in pygame.event.get([pygame.QUIT, pygame.KEYDOWN]):
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    self.quit_game()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         if self.can_shoot:
@@ -151,12 +153,10 @@ class Game:
                             self.can_shoot = False
                             self.shoot_time = pygame.time.get_ticks()
                     if event.key == pygame.K_ESCAPE:
-                        pygame.quit()
-                        sys.exit()
+                        self.quit_game()
 
             if self.player.hearts <= 0:
-                pygame.quit()
-                sys.exit()
+                self.quit_game()
 
             # draw background
             self.display_surface.blit(self.bg, (0, 0))
@@ -175,6 +175,14 @@ class Game:
             # update window
             pygame.display.update()
             self.clock.tick(FRAMERATE)
+
+    def quit_game(self):
+        pygame.quit()
+        # stats = pstats.Stats(pr)
+        # stats.sort_stats(pstats.SortKey.TIME)
+        # # stats.print_stats()
+        # stats.dump_stats(filename="profiling.prof")
+        sys.exit()
 
 
 class CRT:
@@ -209,3 +217,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # with cProfile.Profile() as pr:
+    #     main()
